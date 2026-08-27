@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xhtml="http://www.w3.org/1999/xhtml"
+     width="800"
+     height="500"
+     viewBox="0 0 800 500">
+
+  <!-- JavaScript belongs to the SVG itself -->
+  <script type="application/ecmascript"><![CDATA[
+    function openEmbedded(url) {
+      // Open a completely separate about:blank tab
+      const newTab = window.open("about:blank", "_blank");
+
+      if (!newTab) {
+        alert("Popup was blocked. Please allow popups for this page.");
+        return;
+      }
+
+      // Build the new about:blank page
+      newTab.document.open();
+
+      newTab.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <title>Embedded Page</title>
+
+          <style>
+            * {
+              box-sizing: border-box;
+            }
+
+            html,
+            body {
+              margin: 0;
+              padding: 0;
+              width: 100%;
+              height: 100%;
+              overflow: hidden;
+              background: #000;
+            }
+
+            iframe {
+              display: block;
+              width: 100%;
+              height: 100%;
+              border: 0;
+            }
+          </style>
+        </head>
+
+        <body>
+          <iframe
+            src="${url}"
+            frameborder="0"
+            allowfullscreen>
+          </iframe>
+        </body>
+        </html>
+      `);
+
+      newTab.document.close();
+    }
+  ]]></script>
+
+  <foreignObject x="0" y="0" width="800" height="500">
+
+    <xhtml:div
+      xmlns="http://www.w3.org/1999/xhtml"
+      style="
+        width:800px;
+        height:500px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        gap:20px;
+        background:#111;
+        font-family:Arial,sans-serif;
+      ">
+
+      <xhtml:button
+        onclick="openEmbedded('https://cdn.jsdelivr.net/gh/lucideproxy/svg@latest/logo.svg')"
+        style="
+          width:180px;
+          height:60px;
+          border:1px solid #444;
+          background:#222;
+          color:#fff;
+          font-size:18px;
+          font-weight:bold;
+          cursor:pointer;
+        ">
+        Lucide
+      </xhtml:button>
+
+      <xhtml:button
+        onclick="openEmbedded('https://s3.amazonaws.com/mathvc/index.html')"
+        style="
+          width:180px;
+          height:60px;
+          border:1px solid #444;
+          background:#222;
+          color:#fff;
+          font-size:18px;
+          font-weight:bold;
+          cursor:pointer;
+        ">
+        Fern
+      </xhtml:button>
+
+    </xhtml:div>
+
+  </foreignObject>
+</svg>
