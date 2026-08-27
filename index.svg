@@ -1,40 +1,21 @@
-```svg
 <svg xmlns="http://www.w3.org/2000/svg"
      xmlns:xhtml="http://www.w3.org/1999/xhtml"
      width="100%"
      height="100%"
-     viewBox="0 0 100 100"
-     preserveAspectRatio="none"
-     style="display:block;background:#111;">
+     viewBox="0 0 1000 600"
+     preserveAspectRatio="none">
 
-  <!-- Make the SVG itself fill the browser -->
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #111;
-    }
+  <rect x="0" y="0" width="1000" height="600" fill="#111"/>
 
-    svg {
-      width: 100vw;
-      height: 100vh;
-      display: block;
-    }
-  </style>
-
-  <!-- HTML UI -->
-  <foreignObject x="0" y="0" width="100" height="100">
-
+  <foreignObject x="0" y="0" width="1000" height="600">
     <xhtml:div
       xmlns="http://www.w3.org/1999/xhtml"
       style="
-        width:100vw;
-        height:100vh;
+        width:100%;
+        height:100%;
         margin:0;
         padding:0;
+        box-sizing:border-box;
         display:flex;
         align-items:center;
         justify-content:center;
@@ -50,14 +31,17 @@
           width:168px;
           height:56px;
           padding:0;
+          margin:0;
           background:#222;
           color:#fff;
           border:1px solid #444;
           border-radius:0;
+          outline:none;
           font-family:Arial,sans-serif;
           font-size:17px;
           font-weight:700;
           cursor:pointer;
+          box-sizing:border-box;
         ">
         Lucide
       </xhtml:button>
@@ -69,53 +53,56 @@
           width:168px;
           height:56px;
           padding:0;
+          margin:0;
           background:#222;
           color:#fff;
           border:1px solid #444;
           border-radius:0;
+          outline:none;
           font-family:Arial,sans-serif;
           font-size:17px;
           font-weight:700;
           cursor:pointer;
+          box-sizing:border-box;
         ">
         Fern
       </xhtml:button>
 
     </xhtml:div>
-
   </foreignObject>
 
-  <!-- SVG JavaScript -->
   <script><![CDATA[
 
+    /*
+     * Creates a new about:blank tab and puts
+     * the requested website inside an iframe.
+     */
     function openEmbedded(url) {
 
-      /*
-       * Open a real, separate about:blank tab.
-       * This is called directly from the button's
-       * click event, so popup blockers are much less
-       * likely to interfere.
-       */
-      const tab = window.open("about:blank", "_blank");
+      var tab = window.open("", "_blank");
 
       if (!tab) {
-        alert("The browser blocked the new tab. Please allow popups for this page.");
+        alert(
+          "The browser blocked the popup.\n\n" +
+          "Allow popups for this page and try again."
+        );
         return;
       }
 
-      /*
-       * Construct the about:blank page.
-       */
-      tab.document.open();
-
-      tab.document.write(
+      var html =
         '<!DOCTYPE html>' +
         '<html>' +
         '<head>' +
         '<meta charset="UTF-8">' +
+        '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
         '<title>Embedded</title>' +
+
         '<style>' +
-        'html,body {' +
+        '* {' +
+          'box-sizing:border-box;' +
+        '}' +
+
+        'html, body {' +
           'margin:0;' +
           'padding:0;' +
           'width:100%;' +
@@ -129,60 +116,87 @@
           'width:100%;' +
           'height:100%;' +
           'border:0;' +
+          'margin:0;' +
+          'padding:0;' +
         '}' +
         '</style>' +
+
         '</head>' +
         '<body>' +
 
         '<iframe ' +
-          'src="' + url.replace(/"/g, '&quot;') + '" ' +
+          'src="' + escapeAttribute(url) + '"' +
           'allowfullscreen>' +
         '</iframe>' +
 
         '</body>' +
-        '</html>'
-      );
+        '</html>';
 
-      tab.document.close();
+      try {
+        tab.document.open();
+        tab.document.write(html);
+        tab.document.close();
+      } catch (error) {
+        tab.location.href = url;
+      }
     }
 
 
     /*
-     * Wait until the HTML inside foreignObject exists,
-     * then attach normal JavaScript event listeners.
+     * Safely escape a URL before putting it
+     * inside an HTML attribute.
+     */
+    function escapeAttribute(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+
+    /*
+     * Attach button events.
      */
     function setupButtons() {
 
-      const lucide = document.getElementById("lucideButton");
-      const fern = document.getElementById("fernButton");
+      var lucide = document.getElementById("lucideButton");
+      var fern = document.getElementById("fernButton");
 
-      if (lucide) {
-        lucide.addEventListener("click", function () {
-          openEmbedded(
-            "https://cdn.jsdelivr.net/gh/lucideproxy/svg@latest/logo.svg"
-          );
-        });
+      if (!lucide || !fern) {
+        return;
       }
 
-      if (fern) {
-        fern.addEventListener("click", function () {
-          openEmbedded(
-            "https://s3.amazonaws.com/mathvc/index.html"
-          );
-        });
-      }
+
+      lucide.addEventListener("click", function () {
+
+        openEmbedded(
+          "https://cdn.jsdelivr.net/gh/lucideproxy/svg@latest/logo.svg"
+        );
+
+      });
+
+
+      fern.addEventListener("click", function () {
+
+        openEmbedded(
+          "https://s3.amazonaws.com/mathvc/index.html"
+        );
+
+      });
+
     }
+
 
     /*
-     * Run after the SVG has loaded.
+     * foreignObject content can be created after
+     * the SVG script runs, so wait for the SVG
+     * document to finish loading.
      */
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", setupButtons);
-    } else {
+    window.addEventListener("load", function () {
       setupButtons();
-    }
+    });
 
   ]]></script>
 
 </svg>
-```
